@@ -2,8 +2,7 @@
 resource "aws_vpc" "vpc" {
   cidr_block       = "10.0.0.0/16"
   instance_tenancy = "default"
-
-  tags = {
+tags = {
     Name = "${var.name}-vpc"
   }
 }
@@ -130,21 +129,51 @@ resource "aws_route_table_association" "ass-private_subnet_2" {
   route_table_id = aws_route_table.pri_rt.id
 }
 
-#creating keypair RSA key of size 4096 bits
+
+# Generate a new private key
+#resource "tls_private_key" "auto_discovery" {
+ # algorithm = "RSA"
+  #rsa_bits  = 4096
+#}
+
+# Create the key pair in AWS using the public key
+#resource "aws_key_pair" "auto_discovery_key_pair" {
+ # key_name   = "${var.name}-key"
+  #public_key = tls_private_key.auto_discovery.public_key_openssh
+#}
+
+# Save private key to a PEM file (make sure 'generated' folder exists)
+#resource "local_file" "private_key_pem" {
+ # filename        = "${path.module}/generated/auto-discovery-key.pem"
+  #content         = tls_private_key.auto_discovery.private_key_pem
+  #file_permission = "0400"
+#}
+
+#resource "aws_instance" "example" {
+ # ami           = "ami-xyz" # Replace with your AMI ID
+  #instance_type = "t2.micro"
+  #key_name      = aws_key_pair.auto_discovery_key_pair.key_name
+
+  # ... your other configuration
+#}
+
+
+# Creating keypair RSA key of size 4096 bits
 resource "tls_private_key" "key" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
-# Creating private key
+# Creating private key file
 resource "local_file" "private-key" {
   content         = tls_private_key.key.private_key_pem
   filename        = "${var.name}-key.pem"
   file_permission = 440
 }
 
-# Creating public key 
+# Creating public key in AWS
 resource "aws_key_pair" "public-key" {
-  key_name   = "${var.name}-infra-key"
+  key_name   = "${var.name}-key"
   public_key = tls_private_key.key.public_key_openssh
 }
+
