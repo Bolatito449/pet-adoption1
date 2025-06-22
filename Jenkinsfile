@@ -7,7 +7,7 @@ pipeline {
         choice(name: 'action', choices: ['apply', 'destroy'], description: 'Select the action to perform')
     }
     triggers {
-       pollSCM('* * * * *') // Runs every minute
+         pollSCM('* * * * *') // Runs every minute
     }
     environment {
         SLACKCHANNEL = 'D08B9AX3V6Y'
