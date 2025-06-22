@@ -49,21 +49,6 @@ module "bastion" {
   subnets    = [module.vpc.pub_sub1_id, module.vpc.pub_sub2_id]
 }
 
-# module "nexus" {
-#   source              = "./module/nexus"
-#   name                = local.name
-#   keypair             = module.vpc.public_key
-#   vpc                 = module.vpc.vpc_id
-#   subnet1_id          = module.vpc.pub_sub1_id
-#   subnet2_id          = module.vpc.pub_sub2_id
-#   bastion-sg          = module.bastion.bastion-sg
-#   nr-key              = var.nr_key
-#   nr-id               = var.nr_acct_id
-#   domain              = var.domain
-#   subnet-id           = module.vpc.pub_sub1_id
-#   acm_certificate_arn = data.aws_acm_certificate.auto_acm_cert.arn
-# }
-
 module "nexus" {
   source              = "./module/nexus"
   subnet-id = module.vpc.pub_sub1_id
