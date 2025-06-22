@@ -96,10 +96,8 @@ resource "aws_iam_role_policy_attachment" "s3-policy" {
 resource "null_resource" "ansible-setup" {
   provisioner "local-exec" {
     command = <<EOT
-      /usr/local/bin/aws s3 cp --recursive ${path.module}/script/ s3://chijioke-bucket-auto-discovery-1/ansible-script/
+      /usr/local/bin/aws s3 cp --recursive ${path.module}/script/ s3://tito-bucket-pet-adoption/ansible-script/
     EOT
     interpreter = ["/bin/bash", "-c"]
   }
 }
-
-
