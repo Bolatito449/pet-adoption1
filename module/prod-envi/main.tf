@@ -8,7 +8,7 @@ resource "aws_security_group" "prod-sg" {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    security_groups = [var.bastion, var.ansible]
+    security_groups = [var.bastion_sg, var.ansible]
   }
 
   ingress {
@@ -16,7 +16,7 @@ resource "aws_security_group" "prod-sg" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.prod-elb-sg.id]
   }
   egress {
     description = "Allow all outbound traffic"
@@ -51,16 +51,19 @@ resource "aws_launch_template" "prod_lnch_tmpl" {
   name_prefix   = "${var.name}-prod-web-tmpl"
   instance_type = "t2.medium"
   key_name      = var.key-name
-  user_data = base64encode(templatefile("./module/prod-env/docker-script.sh", {
-    nexus-ip             = var.nexus-ip,
-    nr-key               = var.nr-key,
-    nr-acct-id           = var.nr-acct-id
-  }))
+  user_data = base64encode(templatefile("${path.module}/docker-script.sh", {
+  nexus_ip   = var.nexus_ip
+  nr_key     = var.nr_key
+  nr_acct_id = var.nr_acct_id
+}))
+
 
   network_interfaces {
     security_groups = [aws_security_group.prod-sg.id]
   }
-  #user_data = ""
+  metadata_options {
+    http_tokens = "required"
+  }
 }
 
 # Create Auto Scaling Group
@@ -76,7 +79,7 @@ resource "aws_autoscaling_group" "prod_autoscaling_grp" {
     id      = aws_launch_template.prod_lnch_tmpl.id
     version = "$Latest"
   }
-  vpc_zone_identifier = [var.pri-subnet1, var.pri-subnet2]
+  vpc_zone_identifier = [var.pri_subnet1, var.pri_subnet2]
   target_group_arns   = [aws_lb_target_group.prod-target-group.arn]
 
   tag {
@@ -101,11 +104,11 @@ resource "aws_autoscaling_policy" "prod-asg-policy" {
 
 # Create Application Load Balancer for prod
 resource "aws_lb" "prod_LB" {
-  name                       = "${var.name}-prod-LB"
-  internal                   = false
-  load_balancer_type         = "application"
-  security_groups            = [aws_security_group.prod-sg.id]
-  subnets                    = [var.pub-subnet1, var.pub-subnet2]
+  name               = "${var.name}-prod-LB"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.prod-elb-sg.id]
+  subnets            = [var.pub_subnet1, var.pub_subnet2]
   tags = {
     Name = "${var.name}-prod-LB"
   }
@@ -184,7 +187,7 @@ data "aws_route53_zone" "zone" {
 # Create Route 53 record for prod server
 resource "aws_route53_record" "prod-record" {
   zone_id = data.aws_route53_zone.zone.zone_id
-  name    = "www.${var.domain}"
+  name    = "prod.${var.domain}"
   type    = "A"
   alias {
     name                   = aws_lb.prod_LB.dns_name
