@@ -3,9 +3,9 @@ variable "domain" {
   type        = string
   default     = "bolatitoadegoroye.top"
 }
-variable "nr-key" {
-  default     = "NRAK-STHXOMP3XNPIKH26SUYXNQQQ9PV"
+variable "nr_key" {
+  default = "NRAK-STHXOMP3XNPIKH26SUYXNQQQ9PV"
 }
-variable "nr-id" {
-  default     = 6540262
+variable "nr_acct_id" {
+  default = "6540262"
 }

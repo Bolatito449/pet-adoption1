@@ -8,7 +8,7 @@ resource "aws_security_group" "nexus-sg" {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    security_groups = [var.baston-sg]
+    security_groups = [var.bastion-sg]
   }
   ingress {
     from_port   = 8081

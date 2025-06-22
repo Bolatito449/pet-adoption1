@@ -1,6 +1,6 @@
-# Creating Baston Host Security group 
-resource "aws_security_group" "baston-sg" {
-  name        = "${var.name}-baston-sg"
+# Creating Bastion Host Security group 
+resource "aws_security_group" "bastion-sg" {
+  name        = "${var.name}-bastion-sg"
   description = "Allow SSH"
   vpc_id      = var.vpc
 
@@ -19,7 +19,7 @@ resource "aws_security_group" "baston-sg" {
   }
 
   tags = {
-    Name = "${var.name}-baston-sg"
+    Name = "${var.name}-bastion-sg"
   }
 }
 
@@ -57,8 +57,8 @@ resource "aws_launch_template" "lnch_tmpl" {
 }
 
 # Create ASG for Baston Host
-resource "aws_autoscaling_group" "baston-asg" {
-  name                      = "${var.name}-baston-asg"
+resource "aws_autoscaling_group" "bastion-asg" {
+  name                      = "${var.name}-bastion-asg"
   max_size                  = 3
   min_size                  = 1
   desired_capacity          = 1
@@ -73,16 +73,16 @@ resource "aws_autoscaling_group" "baston-asg" {
 
   tag {
     key                 = "Name"
-    value               = "${var.name}-baston-asg"
+    value               = "${var.name}-bastion-asg"
     propagate_at_launch = true
   }
 }
 
-# Creat ASG policy for Baston Host
-resource "aws_autoscaling_policy" "baston-asg-policy" {
-  name                   = "${var.name}-baston-asg-policy"
+# Creat ASG policy for Bastion Host
+resource "aws_autoscaling_policy" "bastion-asg-policy" {
+  name                   = "${var.name}-bastion-asg-policy"
   adjustment_type        = "ChangeInCapacity"
-  autoscaling_group_name = aws_autoscaling_group.baston-asg.name
+  autoscaling_group_name = aws_autoscaling_group.bastion-asg.name
   policy_type            = "TargetTrackingScaling"
   target_tracking_configuration {
     predefined_metric_specification {

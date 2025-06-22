@@ -1,19 +1,17 @@
 provider "aws" {
-  region  = "eu-west-1"
-  
-
+  region  = "eu-west-2"
 }
+
 provider "vault" {
   address = "https://vault.bolatitoadegoroye.top"
-  token   = "s.iNnzr4aFXPn7QqOoUqVkiCyK"
+  token   = "s.60MsddKJAAszdpvFwMJ62sKy"
 }
 
 terraform {
   backend "s3" {
-    bucket         = "bolatito-bucket-pet-adoption"
-    key            = "infrastructure/terraform.tfstate"
-    region         = "eu-west-1"
-    use_lockfile   = true
-    encrypt        = true
+    bucket       = "tito-bucket-pet-adoption"
+    key          = "infrastructure/terraform.tfstate"
+    region       = "eu-west-2"
+    use_lockfile = true
   }
 }
