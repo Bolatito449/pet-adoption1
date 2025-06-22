@@ -70,8 +70,8 @@ resource "aws_iam_role_policy" "vault_kms_policy" {
     ]
   })
 }
-resource "aws_iam_instance_profile" "profile_vault" {
-  name = "${local.name}-vault-profile"
+resource "aws_iam_instance_profile" "profile-vault" {
+  name = "${local.name}-profile-vault"
   role = aws_iam_role.vault_role.name
 }
 
@@ -133,10 +133,10 @@ resource "aws_instance" "vault_server" {
   instance_type        = "t2.medium"
   key_name             = aws_key_pair.vault_key.key_name
   security_groups      = [aws_security_group.vault_sg.name]
-  iam_instance_profile = aws_iam_instance_profile.profile_vault.id
+  iam_instance_profile = aws_iam_instance_profile.profile-vault.id
 
   user_data = templatefile("./vault_userdata.sh", {
-    var1 = "eu-west-3",
+    var1 = "eu-west-2",
     var2 = aws_kms_key.vault_key.id
   })
 
@@ -144,8 +144,6 @@ resource "aws_instance" "vault_server" {
     Name = "${local.name}-VaultServer"
   }
 }
-
-
 
 #create a time sleep resource that allow terraform to wait till vault server is ready
 resource "time_sleep" "wait_3_min" {
@@ -157,7 +155,7 @@ resource "null_resource" "fetch_token" {
   depends_on = [aws_instance.vault_server, time_sleep.wait_3_min]
 
   provisioner "local-exec" {
-    command = "scp -o StrictHostKeyChecking=no -i auto-discovery-key.pem ubuntu@${aws_instance.vault_server.public_ip}:/home/ubuntu/token.txt ."
+    command = "scp -o StrictHostKeyChecking=no -i tito-ad-key.pem ubuntu@${aws_instance.vault_server.public_ip}:/home/ubuntu/token.txt ."
   }
 
   provisioner "local-exec" {
@@ -167,8 +165,8 @@ resource "null_resource" "fetch_token" {
 }
 
 # Fetch Route 53 Zone for DNS Validation
-data "aws_route53_zone" "auto-discovery-zone" {
-  name         = "chijiokedevops.space"
+data "aws_route53_zone" "zone" {
+  name         = "bolatitoadegoroye.top"
   private_zone = false
 }
 
@@ -197,7 +195,7 @@ resource "aws_route53_record" "acm_validation_record" {
   }
 
   # Create DNS Validation Record for ACM Certificate
-  zone_id         = data.aws_route53_zone.auto-discovery-zone.zone_id
+  zone_id         = data.aws_route53_zone.zone.zone_id
   allow_overwrite = true
   name            = each.value.name
   type            = each.value.type
@@ -242,7 +240,7 @@ resource "aws_security_group" "elb_vault_sg" {
 # Create load balancer for Vault Server
 resource "aws_elb" "elb_vault" {
   name               = "vault-elb"
-  availability_zones = ["eu-west-3a", "eu-west-3b", "eu-west-3c"]
+  availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
   security_groups    = [aws_security_group.elb_vault_sg.id]
 
   listener {
@@ -273,7 +271,7 @@ resource "aws_elb" "elb_vault" {
 }
 # Create Route 53 A Record for Vault Server
 resource "aws_route53_record" "vault_record" {
-  zone_id = data.aws_route53_zone.auto-discovery-zone.zone_id
+  zone_id = data.aws_route53_zone.zone.zone_id
   name    = "vault.${var.domain}"
   type    = "A"
   alias {
@@ -307,7 +305,7 @@ resource "aws_instance" "jenkins_server" {
   key_name                    = aws_key_pair.vault_key.key_name
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.jenkins_sg.id]
-  iam_instance_profile        = aws_iam_instance_profile.profile_jenkins.id
+  iam_instance_profile        = aws_iam_instance_profile.profile-jenkins.id
 
   root_block_device {
     volume_size = 30
@@ -316,8 +314,8 @@ resource "aws_instance" "jenkins_server" {
   }
 
   user_data = templatefile("./jenkins-userdata.sh", {
-    nr_key     = ""
-    nr_acct_id = ""
+    nr_key     = "NRAK-STHXOMP3XNPIKH26SUYXNQQQ9PV"
+    nr_acct_id = "6540262"
   })
 
   tags = {
@@ -348,8 +346,8 @@ resource "aws_iam_role_policy_attachment" "jenkins_role_attachment" {
 }
 
 # Attach the policy to the role
-resource "aws_iam_instance_profile" "profile_jenkins" {
-  name = "${local.name}-jenkins-profile"
+resource "aws_iam_instance_profile" "profile-jenkins" {
+  name = "${local.name}-profile-jenkins"
   role = aws_iam_role.jenkins_role.name
 
   lifecycle {
@@ -395,7 +393,7 @@ resource "aws_security_group" "jenkins_sg" {
 resource "aws_elb" "elb_jenkins" {
   name               = "elb-jenkins"
   security_groups    = [aws_security_group.jenkins_elb_sg.id]
-  availability_zones = ["eu-west-3a", "eu-west-3b", "eu-west-3c"]
+  availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
   listener {
     instance_port      = 8080
     instance_protocol  = "HTTP"
@@ -440,7 +438,7 @@ resource "aws_security_group" "jenkins_elb_sg" {
 
 # Create Route 53 record for jenkins server
 resource "aws_route53_record" "jenkins-record" {
-  zone_id = data.aws_route53_zone.auto-discovery-zone.zone_id
+  zone_id = data.aws_route53_zone.zone.zone_id
   name    = "jenkins.${var.domain}"
   type    = "A"
   alias {

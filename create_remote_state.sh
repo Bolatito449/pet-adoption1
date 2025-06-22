@@ -2,8 +2,8 @@
 set -euo pipefail  # Enable strict error handling
 
 # Set Variables
-BUCKET_NAME="bolatito-bucket-pet-adoption"
-AWS_REGION="eu-west-1"
+BUCKET_NAME="tito-bucket-pet-adoption"
+AWS_REGION="eu-west-2"
 PROFILE="myprofile"  # Replace with your AWS CLI profile name
 
 # Function to handle errors
