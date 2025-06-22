@@ -56,6 +56,7 @@ data "aws_ami" "redhat" {
 
 resource "aws_instance" "nexus" {
   ami                         = data.aws_ami.redhat.id
+  # ami                         = "ami-07d4917b6f95f5c2a" # Red Hat Enterprise Linux
   instance_type               = "t2.medium"
   subnet_id                   = var.subnet-id
   vpc_security_group_ids      = [aws_security_group.nexus-sg.id]
@@ -125,14 +126,14 @@ resource "aws_elb" "elb_nexus" {
 }
 
 # Create Route 53 record for bastion host
-data "aws_route53_zone" "acp-zone" {
+data "aws_route53_zone" "zone" {
   name         = var.domain
   private_zone = false
 }
 
 # Create Route 53 record for nexus server
 resource "aws_route53_record" "nexus-record" {
-  zone_id = data.aws_route53_zone.acp-zone.zone_id
+  zone_id = data.aws_route53_zone.zone.zone_id
   name    = "nexus.${var.domain}"
   type    = "A"
   alias {
