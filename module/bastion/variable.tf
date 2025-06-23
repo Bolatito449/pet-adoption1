@@ -4,5 +4,5 @@ variable "keypair" {}
 variable "subnets" {}
 variable "privatekey" {}
 variable "security_groups" {}
-variable "bastion-sg" {}
+variable "bastion_sg" {}
   

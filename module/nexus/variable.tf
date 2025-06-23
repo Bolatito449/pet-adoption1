@@ -2,7 +2,7 @@ variable "subnet-id" {}
 variable "keypair" {}
 variable "name" {}
 variable "vpc" {}
-variable "bastion-sg" {}
+variable "bastion_sg" {}
 variable "domain" {}
 variable "subnet1_id" {}
 variable "subnet2_id" {}
