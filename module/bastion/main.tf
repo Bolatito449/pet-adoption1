@@ -47,7 +47,7 @@ resource "aws_launch_template" "lnch_tmpl" {
   image_id      = data.aws_ami.redhat.id
   instance_type = "t2.medium"
   key_name      = var.keypair
-    user_data = base64encode(templatefile("./module/baston/userdata.sh", {
+    user_data = base64encode(templatefile("./module/bastion/userdata.sh", {
     privatekey = var.privatekey
   }))
   network_interfaces {

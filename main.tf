@@ -59,7 +59,7 @@ module "bastion" {
   keypair    = module.vpc.public_key
   subnets    = [module.vpc.pub_sub1_id, module.vpc.pub_sub2_id]
   privatekey = module.vpc.private_key
-  security_groups = [aws_security_group.bastion-sg.id]
+  security_groups = [aws_security_group.bastion_sg.id]
   bastion_sg = [aws_security_group.bastion_sg.id]
 }
 
@@ -83,7 +83,7 @@ module "database" {
   name        = local.name
   pri-sub-1   = module.vpc.pri_sub1_id
   pri-sub-2   = module.vpc.pri_sub2_id
-  bastion = module.bastion.bastion_sg
+  bastion     = module.bastion.bastion_sg
   vpc-id      = module.vpc.vpc_id
   stage-sg    = module.stage-envi.stage-sg
   prod-sg     = module.prod-envi.prod-sg
