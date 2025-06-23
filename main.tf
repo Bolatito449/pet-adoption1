@@ -41,14 +41,26 @@ module "sonarqube" {
   auto_acm_cert       = data.aws_acm_certificate.auto_acm_cert.arn
 }
 
+# module "bastion" {
+#   source     = "./module/bastion"
+#   name       = local.name
+#   keypair    = module.vpc.public_key
+#   privatekey = module.vpc.private_key
+#   vpc        = module.vpc.vpc_id
+#   security_groups = [aws_security_group.bastion-sg.id]
+#   bastion_sg = aws_security_group.bastion-sg.id
+#   subnets    = [module.vpc.pub_sub1_id, module.vpc.pub_sub2_id]
+# }
+
 module "bastion" {
   source     = "./module/bastion"
   name       = local.name
-  keypair    = module.vpc.public_key
-  privatekey = module.vpc.private_key
   vpc        = module.vpc.vpc_id
-  security_groups = [aws_security_group.baston-sg.id]
+  keypair    = module.vpc.public_key
   subnets    = [module.vpc.pub_sub1_id, module.vpc.pub_sub2_id]
+  privatekey = module.vpc.private_key
+  security_groups = [aws_security_group.bastion-sg.id]
+  bastion-sg = [aws_security_group.bastion-sg.id]
 }
 
 module "nexus" {
