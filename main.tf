@@ -36,8 +36,9 @@ module "sonarqube" {
   public_subnets      = [module.vpc.pub_sub1_id, module.vpc.pub_sub2_id]
   nr_key              = var.nr_key
   nr_acct_id          = var.nr_acct_id
-  route53_zone_id     = data.aws_route53_zone.auto-discovery-zone.zone_id
+  route53_zone_id     = data.aws_route53_zone.zone.zone_id
   acm_certificate_arn = data.aws_acm_certificate.auto_acm_cert.arn
+  auto_acm_cert       = data.aws_acm_certificate.auto_acm_cert.arn
 }
 
 module "bastion" {
@@ -46,11 +47,12 @@ module "bastion" {
   keypair    = module.vpc.public_key
   privatekey = module.vpc.private_key
   vpc        = module.vpc.vpc_id
+  security_groups = [aws_security_group.baston-sg.id]
   subnets    = [module.vpc.pub_sub1_id, module.vpc.pub_sub2_id]
 }
 
 module "nexus" {
-  source              = "./module/nexus"
+  source    = "./module/nexus"
   subnet-id = module.vpc.pub_sub1_id
   keypair   = module.vpc.public_key
   name      = local.name

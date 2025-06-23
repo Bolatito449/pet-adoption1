@@ -14,3 +14,7 @@ variable "acm_certificate_arn" {
 variable "route53_zone_id" {}
 variable "nr_key" {}
 variable "nr_acct_id" {}
+variable "auto_acm_cert" {
+  description = "ACM certificate for automatic HTTPS"
+  type        = string
+}
