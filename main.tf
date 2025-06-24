@@ -38,7 +38,7 @@ module "sonarqube" {
   nr_acct_id          = var.nr_acct_id
   route53_zone_id     = data.aws_route53_zone.zone.zone_id
   acm_certificate_arn = data.aws_acm_certificate.auto_acm_cert.arn
-  auto_acm_cert       = data.aws_acm_certificate.auto_acm_cert.arn
+  
 }
 
 # module "bastion" {
