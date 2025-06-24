@@ -15,7 +15,27 @@ data "aws_ami" "redhat" {
     values = ["x86_64"]
   }
 }
-#Creating ansible security group
+
+
+# Create Ansible Server
+resource "aws_instance" "ansible-server" {
+  ami                    = data.aws_ami.redhat.id #rehat 
+  instance_type          = "t2.medium"
+  vpc_security_group_ids = [aws_security_group.ansible-sg.id]
+  key_name               = var.keypair
+  subnet_id              = var.subnet_id
+  user_data              = local.ansible_userdata
+  root_block_device {
+    volume_size = 20
+    volume_type = "gp3"
+    encrypted   = true
+  }
+  tags = {
+    Name = "${var.name}-ansible-server"
+  }
+}
+
+#Creating ansible secority group
 resource "aws_security_group" "ansible-sg" {
   name        = "${var.name}ansible-sg"
   description = "Allow ssh"
@@ -26,7 +46,7 @@ resource "aws_security_group" "ansible-sg" {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    security_groups = [var.bastion_key]
+    security_groups = [var.bastion]
   }
 
   egress {
@@ -39,65 +59,26 @@ resource "aws_security_group" "ansible-sg" {
     Name = "${var.name}-ansible-sg"
   }
 }
-# Create IAM role for Ansible profile
-resource "aws_iam_instance_profile" "ansible_profile" {
-  name = "ansible-profile"
-  role = aws_iam_role.ansible-role.name
+
+# IAM User
+resource "aws_iam_user" "ansible-user" {
+  name = "${var.name}-ansible-user"
 }
 
-
-# Create Ansible Server
-resource "aws_instance" "ansible_server" {
-  ami                    = data.aws_ami.redhat.id #rehat 
-  instance_type          = "t2.micro"
-  iam_instance_profile   = aws_iam_instance_profile.ansible_profile.name
-  vpc_security_group_ids = [aws_security_group.ansible-sg.id]
-  key_name               = var.keypair
-  subnet_id              = var.subnet_id
-  user_data              = local.ansible_userdata
-  root_block_device {
-    volume_size = 20
-    volume_type = "gp3"
-    encrypted   = true
-  }
-  metadata_options {
-    http_tokens = "required"
-  }
-  tags = {
-    Name = "${var.name}-ansible-server"
-  }
+resource "aws_iam_group" "ansible-group" {
+  name = "${var.name}-ansible-group"
 }
 
-# Create IAM role for ansible
-resource "aws_iam_role" "ansible-role" {
-  name = "ansible-discovery-role"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Service = "ec2.amazonaws.com"
-      },
-      Action = "sts:AssumeRole"
-    }]
-  })
+resource "aws_iam_access_key" "ansible-user-key" {
+  user = aws_iam_user.ansible-user.name
 }
-# Attach the EC2 full access policy to the role
-resource "aws_iam_role_policy_attachment" "ec2-policy" {
-  role       = aws_iam_role.ansible-role.name
+
+resource "aws_iam_user_group_membership" "ansible-group-member" {
+  user   = aws_iam_user.ansible-user.name
+  groups = [aws_iam_group.ansible-group.name]
+}
+
+resource "aws_iam_group_policy_attachment" "ansible-policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+  group      = aws_iam_group.ansible-group.name
 }
-# Attach S3 full access policy to the role
-resource "aws_iam_role_policy_attachment" "s3-policy" {
-  role       = aws_iam_role.ansible-role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-}
-
-# resource "null_resource" "ansible-setup" {
-#   provisioner "local-exec" {
-#     command = <<EOT
-#       /usr/local/bin/aws s3 cp --recursive ${path.module}/script/ s3://tito-bucket-pet-adoption/ansible-script/
-#     EOT
-#     interpreter = ["/bin/bash", "-c"]
-#   }
-# }
