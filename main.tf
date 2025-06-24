@@ -94,11 +94,14 @@ module "ansible" {
   keypair   = module.vpc.public_key
   subnet_id = module.vpc.pri_sub1_id
   vpc       = module.vpc.vpc_id
-  bastion_key   = module.bastion.bastion_sg
-  private_key = module.vpc.private_key
-  nexus_ip = module.nexus.nexus_ip
+  bastion   = module.bastion.bastion-sg
+  private-key = module.vpc.private_key
+  deployment = "./module/ansible/deployment.yml" # Path to the deployment file
+  prod-bashscript = "./module/ansible/prod-bashscript.sh" # Path to the prod bash script
+  stage-bashscript = "./module/ansible/stage-bashscript.sh" # Path to the stage bash script
+  nexus-ip = module.nexus.nexus_ip
   nr_key = var.nr_key
-  nr_acct_id = var.nr_acct_id
+  nr_acc_id = var.nr_acct_id
 }
 
 module "prod-envi" {
@@ -136,3 +139,4 @@ module "stage-envi" {
   nr_acct_id   = var.nr_acct_id  
   ansible      =  module.ansible.ansible_sg
 }
+
