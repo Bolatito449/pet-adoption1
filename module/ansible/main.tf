@@ -93,11 +93,11 @@ resource "aws_iam_role_policy_attachment" "s3-policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
-resource "null_resource" "ansible-setup" {
-  provisioner "local-exec" {
-    command = <<EOT
-      /usr/local/bin/aws s3 cp --recursive ${path.module}/script/ s3://tito-bucket-pet-adoption/ansible-script/
-    EOT
-    interpreter = ["/bin/bash", "-c"]
-  }
-}
+# resource "null_resource" "ansible-setup" {
+#   provisioner "local-exec" {
+#     command = <<EOT
+#       /usr/local/bin/aws s3 cp --recursive ${path.module}/script/ s3://tito-bucket-pet-adoption/ansible-script/
+#     EOT
+#     interpreter = ["/bin/bash", "-c"]
+#   }
+# }
