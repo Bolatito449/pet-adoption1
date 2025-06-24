@@ -94,7 +94,7 @@ module "ansible" {
   keypair   = module.vpc.public_key
   subnet_id = module.vpc.pri_sub1_id
   vpc       = module.vpc.vpc_id
-  bastion   = module.bastion.bastion-sg
+  bastion   = module.bastion.bastion_sg
   private-key = module.vpc.private_key
   deployment = "./module/ansible/deployment.yml" # Path to the deployment file
   prod-bashscript = "./module/ansible/prod-bashscript.sh" # Path to the prod bash script
