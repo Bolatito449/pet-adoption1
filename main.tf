@@ -59,8 +59,7 @@ module "bastion" {
   keypair    = module.vpc.public_key
   subnets    = [module.vpc.pub_sub1_id, module.vpc.pub_sub2_id]
   privatekey = module.vpc.private_key
-  security_groups = [aws_security_group.bastion_sg.id]
-  bastion_sg = [aws_security_group.bastion_sg.id]
+  
 }
 
 module "nexus" {
