@@ -7,15 +7,13 @@ data "aws_instances" "bastion_instances" {
     name   = "instance-state-name"
     values = ["running"]
   }
-  depends_on = [aws_autoscaling_group.bastion_asg]
+  depends_on = [aws_autoscaling_group.bastion-asg]
 }
-
-output "bastion-public-ip" {
+output "bastion_public_ip" {
   value       = data.aws_instances.bastion_instances.public_ips[0]
   description = "The public IP address of the bastion instance"
 }
 
-output "bastion_sg" {
-  value = aws_security_group.bastion_sg.id
+output "bastion-sg" {
+  value = aws_security_group.bastion-sg.id
 }
-

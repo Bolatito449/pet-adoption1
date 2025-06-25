@@ -1,6 +1,6 @@
 variable "name" {}
 variable "vpc-id" {}
-variable "bastion_sg" {}
+variable "bastion-sg" {}
 variable "key-name" {}
 variable "pri_subnet1" {}
 variable "pri_subnet2" {}

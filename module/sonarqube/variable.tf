@@ -1,7 +1,7 @@
 variable "keypair" {}
 variable "name" {}
 variable "subnet_id" {}
-variable "bastion_sg" {}
+variable "bastion-sg" {}
 variable "vpc_id" {}
 variable "domain" {
   default = "bolatitoadegoroye.top"

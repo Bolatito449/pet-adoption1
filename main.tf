@@ -30,7 +30,7 @@ module "sonarqube" {
   keypair             = module.vpc.public_key
   name                = local.name
   subnet_id           = module.vpc.pub_sub1_id
-  bastion_sg          = module.bastion.bastion_sg
+  bastion-sg          = module.bastion.bastion-sg
   vpc_id              = module.vpc.vpc_id
   domain              = var.domain
   public_subnets      = [module.vpc.pub_sub1_id, module.vpc.pub_sub2_id]
@@ -57,7 +57,7 @@ module "nexus" {
   keypair   = module.vpc.public_key
   name      = local.name
   vpc       = module.vpc.vpc_id
-  bastion_sg = module.bastion.bastion_sg
+  bastion-sg = module.bastion.bastion-sg
   domain    = var.domain
   subnet1_id = module.vpc.pub_sub1_id
   subnet2_id = module.vpc.pub_sub2_id
@@ -71,7 +71,7 @@ module "database" {
   name        = local.name
   pri-sub-1   = module.vpc.pri_sub1_id
   pri-sub-2   = module.vpc.pri_sub2_id
-  bastion     = module.bastion.bastion_sg
+  bastion     = module.bastion.bastion-sg
   vpc-id      = module.vpc.vpc_id
   stage-sg    = module.stage-envi.stage-sg
   prod-sg     = module.prod-envi.prod-sg
@@ -83,7 +83,7 @@ module "ansible" {
   keypair   = module.vpc.public_key
   subnet_id = module.vpc.pri_sub1_id
   vpc       = module.vpc.vpc_id
-  bastion   = module.bastion.bastion_sg
+  bastion   = module.bastion.bastion-sg
   private-key = module.vpc.private_key
   nexus-ip = module.nexus.nexus_ip
   nr-key = var.nr-key
@@ -95,7 +95,7 @@ module "prod-envi" {
   source       = "./module/prod-envi"
   name         = local.name
   vpc-id       = module.vpc.vpc_id
-  bastion_sg   = module.bastion.bastion_sg
+  bastion-sg   = module.bastion.bastion-sg
   key-name     = module.vpc.public_key
   pri_subnet1  = module.vpc.pri_sub1_id
   pri_subnet2  = module.vpc.pri_sub2_id
@@ -105,15 +105,15 @@ module "prod-envi" {
   domain       = var.domain
   nexus_ip     = module.nexus.nexus_ip
   nr-key       = var.nr-key
-  nr-acc-id   = var.nr-acc-id
-  ansible      =  module.ansible.ansible_sg
+  nr-acc-id    = var.nr-acc-id
+  ansible      = module.ansible.ansible_sg
 }
 
 module "stage-envi" {
   source       = "./module/stage-envi"
   name         = local.name
   vpc-id       = module.vpc.vpc_id
-  bastion_sg   = module.bastion.bastion_sg
+  bastion-sg   = module.bastion.bastion-sg
   key-name     = module.vpc.public_key
   pri_subnet1  = module.vpc.pri_sub1_id
   pri_subnet2  = module.vpc.pri_sub2_id

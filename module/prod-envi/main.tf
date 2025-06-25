@@ -8,7 +8,7 @@ resource "aws_security_group" "prod-sg" {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    security_groups = [var.bastion_sg, var.ansible]
+    security_groups = [var.bastion-sg, var.ansible]
   }
 
   ingress {
