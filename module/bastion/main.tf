@@ -93,7 +93,7 @@
 # }
 
 # Creating Baston Host Security group 
-resource "aws_security_group" "baston-sg" {
+resource "aws_security_group" "bastion_sg" {
   name        = "${var.name}-baston-sg"
   description = "Allow SSH"
   vpc_id      = var.vpc
@@ -145,13 +145,13 @@ resource "aws_launch_template" "lnch_tmpl" {
     privatekey = var.privatekey
   }))
   network_interfaces {
-    security_groups             = [aws_security_group.baston-sg.id]
+    security_groups             = [aws_security_group.bastion_sg.id]
     associate_public_ip_address = true
   }
 }
 
 # Create ASG for Baston Host
-resource "aws_autoscaling_group" "baston-asg" {
+resource "aws_autoscaling_group" "bastion_asg" {
   name                      = "${var.name}-bastion-asg"
   max_size                  = 3
   min_size                  = 1
@@ -176,7 +176,7 @@ resource "aws_autoscaling_group" "baston-asg" {
 resource "aws_autoscaling_policy" "baston-asg-policy" {
   name                   = "${var.name}-baston-asg-policy"
   adjustment_type        = "ChangeInCapacity"
-  autoscaling_group_name = aws_autoscaling_group.baston-asg.name
+  autoscaling_group_name = aws_autoscaling_group.bastion_asg.name
   policy_type            = "TargetTrackingScaling"
   target_tracking_configuration {
     predefined_metric_specification {
