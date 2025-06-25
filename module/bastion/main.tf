@@ -113,7 +113,7 @@ resource "aws_security_group" "bastion_sg" {
   }
 
   tags = {
-    Name = "${var.name}-baston-sg"
+    Name = "${var.name}-bastion-sg"
   }
 }
 
@@ -167,13 +167,13 @@ resource "aws_autoscaling_group" "bastion_asg" {
 
   tag {
     key                 = "Name"
-    value               = "${var.name}-baston-asg"
+    value               = "${var.name}-bastion-asg"
     propagate_at_launch = true
   }
 }
 
 # Creat ASG policy for Baston Host
-resource "aws_autoscaling_policy" "baston-asg-policy" {
+resource "aws_autoscaling_policy" "bastion-asg-policy" {
   name                   = "${var.name}-baston-asg-policy"
   adjustment_type        = "ChangeInCapacity"
   autoscaling_group_name = aws_autoscaling_group.bastion_asg.name
