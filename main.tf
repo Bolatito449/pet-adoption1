@@ -27,16 +27,15 @@ data "aws_route53_zone" "zone" {
 
 module "sonarqube" {
   source              = "./module/sonarqube"
-  keypair             = module.vpc.public_key
+  key                 = module.vpc.public_key
   name                = local.name
   subnet_id           = module.vpc.pub_sub1_id
-  bastion-sg          = module.bastion.bastion-sg
-  vpc_id              = module.vpc.vpc_id
+  bastion             = module.bastion.bastion-sg
+  vpc-id              = module.vpc.vpc_id
   domain              = var.domain
   public_subnets      = [module.vpc.pub_sub1_id, module.vpc.pub_sub2_id]
   nr-key              = var.nr-key
-  nr-acc-id           = var.nr-acc-id
-  route53_zone_id     = data.aws_route53_zone.zone.zone_id
+  nr-id               = var.nr-acc-id
   acm_certificate_arn = data.aws_acm_certificate.auto_acm_cert.arn
   
 }

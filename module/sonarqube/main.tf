@@ -1,106 +1,91 @@
-# Get latest Ubuntu AMI
+# Ubuntu AMI lookup
 data "aws_ami" "ubuntu" {
   most_recent = true
-  owners      = ["099720109477"]
-
+  owners      = ["099720109477"] # Canonical
   filter {
     name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
   }
-
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
   }
 }
 
-# Security Group for SonarQube EC2 instance
-resource "aws_security_group" "sonarqube_sg" {
-  name        = "${var.name}sonarqube-sg"
-  description = "Allow SSH and SonarQube UI"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    description = "SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+resource "aws_instance" "sonarqube-server" {
+  ami                         = data.aws_ami.ubuntu.id # ubuntu in eu-west-2
+  instance_type               = "t2.medium"
+  key_name                    = var.key
+  subnet_id                   = var.subnet_id
+  associate_public_ip_address = true
+  vpc_security_group_ids      = [aws_security_group.sonarqube_sg.id]
+  root_block_device {
+    volume_size = 20    # Size in GB
+    volume_type = "gp3" # General Purpose SSD (recommended)
+    encrypted   = true  # Enable encryption (best practice)
   }
+  user_data = local.userdata
+  tags = {
+    Name = "${var.name}-sonarqube-server"
+  }
+}
 
+# Create sonarqube security group
+resource "aws_security_group" "sonarqube_sg" {
+  name        = "${var.name}-sonarqube-sg"
+  description = "Allow SSH and HTTPS"
+  vpc_id      = var.vpc-id
   ingress {
-    description = "SonarQube UI"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [var.bastion]
+  }
+  ingress {
     from_port   = 9000
     to_port     = 9000
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.elb-sonar-sg.id]
   }
-
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-}
-
-# Launch SonarQube EC2 instance
-resource "aws_instance" "sonarqube_server" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.medium"
-  subnet_id                   = var.subnet_id
-  vpc_security_group_ids      = [aws_security_group.sonarqube_sg.id]
-  associate_public_ip_address = true
-  key_name                    = var.keypair
-
-  user_data = file("${path.module}/sonar_userdata.sh") # make sure this file exists
-
-  root_block_device {
-    volume_size = 20
-    volume_type = "gp3"
-    encrypted   = true
-  }
-
-  metadata_options {
-    http_tokens = "required"
-  }
-
   tags = {
-    Name = "SonarQube-Server"
+    Name = "${var.name}-sonarqube-sg"
   }
 }
 
-# Security Group for ELB
-resource "aws_security_group" "elb_sg" {
-  name        = "${var.name}elb-sonarqube-sg"
-  description = "Allow HTTPS to SonarQube ELB"
-  vpc_id      = var.vpc_id
+#Create Security Group for Sonarqube Sever ELB
+resource "aws_security_group" "elb-sonar-sg" {
+  name        = "${var.name}-sonarqube-elb-sg"
+  description = "Allow HTTPS"
+  vpc_id      = var.vpc-id
 
   ingress {
-    description = "HTTPS"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   tags = {
-    Name = "elb-sonarqube-sg"
+    Name = "${var.name}-sonarqube-elb-sg"
   }
 }
 
-# Create Classic Load Balancer
-resource "aws_elb" "sonarqube_elb" {
-  name            = "${var.name}-sonarqube-elb"
+# Create Elastic load balancer for Sonarqube Server
+resource "aws_elb" "elb-sonar" {
+  name            = "${var.name}-elb-sonar"
   subnets         = var.public_subnets
-  security_groups = [aws_security_group.elb_sg.id]
+  security_groups = [aws_security_group.elb-sonar-sg.id]
 
   listener {
     instance_port      = 9000
@@ -111,40 +96,38 @@ resource "aws_elb" "sonarqube_elb" {
   }
 
   health_check {
-    target              = "TCP:9000"
-    interval            = 30
-    timeout             = 5
     healthy_threshold   = 2
     unhealthy_threshold = 2
+    timeout             = 3
+    target              = "TCP:9000"
+    interval            = 30
   }
 
-  instances = [aws_instance.sonarqube_server.id]
+  instances                   = [aws_instance.sonarqube-server.id]
+  cross_zone_load_balancing   = true
+  idle_timeout                = 400
+  connection_draining         = true
+  connection_draining_timeout = 400
 
   tags = {
-    Name = "sonarqube-elb"
+    Name = "${var.name}-elb-sonar"
   }
 }
 
-# ACM Certificate
-resource "aws_acm_certificate" "sonarqube_cert" {
-  domain_name       = "sonar.${var.domain}"
-  validation_method = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
+# Create Route 53 Hosted Zone for Sonarqube
+data "aws_route53_zone" "zone" {
+  name         = var.domain
+  private_zone = false
 }
 
-# Route53 Record
-resource "aws_route53_record" "sonarqube_dns" {
-  zone_id = var.route53_zone_id
+# Create Route 53 A Record for Sonarqube Server
+resource "aws_route53_record" "sonar-record" {
+  zone_id = data.aws_route53_zone.zone.zone_id
   name    = "sonar.${var.domain}"
   type    = "A"
-
   alias {
-    name                   = aws_elb.sonarqube_elb.dns_name
-    zone_id                = aws_elb.sonarqube_elb.zone_id
+    name                   = aws_elb.elb-sonar.dns_name
+    zone_id                = aws_elb.elb-sonar.zone_id
     evaluate_target_health = true
   }
 }
-
