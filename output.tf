@@ -1,5 +1,5 @@
 output "bastion-public-ip" {
-  value = module.bastion.bastion_public_ip
+  value = module.bastion.bastion-public-ip
 }
 
 output "nexus_ip" {
