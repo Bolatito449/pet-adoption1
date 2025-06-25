@@ -4,3 +4,4 @@ output "ansible_ip" {
 output "ansible_sg" {
   value = aws_security_group.ansible-sg.id
 }
+

@@ -93,7 +93,7 @@ echo "✅ SonarQube $SONAR_VERSION installed and running."
 sudo tee /etc/nginx/sites-available/sonarqube > /dev/null <<EOF
 server {
     listen 80;
-    server_name sonarqube.chijiokedevops.space;
+    server_name sonarqube.bolatitoadegoroye.top;
 
     location / {
         proxy_pass http://localhost:9000;
@@ -115,8 +115,8 @@ sudo nginx -t && sudo systemctl restart nginx
 
 # === INSTALL NEW RELIC AGENT ===
 curl -Ls https://download.newrelic.com/install/newrelic-cli/scripts/install.sh | bash
-sudo NEW_RELIC_API_KEY="${nr_key}" \
-     NEW_RELIC_ACCOUNT_ID="${nr_acct_id}" \
+sudo NEW_RELIC_API_KEY="${nr-key}" \
+     NEW_RELIC_ACCOUNT_ID="${nr-acc-id}" \
      NEW_RELIC_REGION="EU" \
      /usr/local/bin/newrelic install -y
 

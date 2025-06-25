@@ -53,8 +53,8 @@ resource "aws_launch_template" "stage_lnch_tmpl" {
   key_name      = var.key-name
  user_data = base64encode(templatefile("${path.module}/docker-script.sh", {
   nexus_ip   = var.nexus_ip
-  nr_key     = var.nr_key
-  nr_acct_id = var.nr_acct_id
+  nr_key     = var.nr-key
+  nr_acct_id = var.nr-acc-id
 }))
 
 

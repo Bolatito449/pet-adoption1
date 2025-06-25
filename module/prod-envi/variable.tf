@@ -8,8 +8,8 @@ variable "pub_subnet1" {}
 variable "pub_subnet2" {}
 variable "domain" {}
 variable "nexus_ip" {}
-variable "nr_key" {}
-variable "nr_acct_id" {}
+variable "nr-key" {}
+variable "nr-acc-id" {}
 variable "ansible" {}
 variable "acm-cert-arn" {
   type        = string

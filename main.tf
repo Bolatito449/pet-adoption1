@@ -34,23 +34,12 @@ module "sonarqube" {
   vpc_id              = module.vpc.vpc_id
   domain              = var.domain
   public_subnets      = [module.vpc.pub_sub1_id, module.vpc.pub_sub2_id]
-  nr_key              = var.nr_key
-  nr_acct_id          = var.nr_acct_id
+  nr-key              = var.nr-key
+  nr-acc-id           = var.nr-acc-id
   route53_zone_id     = data.aws_route53_zone.zone.zone_id
   acm_certificate_arn = data.aws_acm_certificate.auto_acm_cert.arn
   
 }
-
-# module "bastion" {
-#   source     = "./module/bastion"
-#   name       = local.name
-#   keypair    = module.vpc.public_key
-#   privatekey = module.vpc.private_key
-#   vpc        = module.vpc.vpc_id
-#   security_groups = [aws_security_group.bastion-sg.id]
-#   bastion_sg = aws_security_group.bastion-sg.id
-#   subnets    = [module.vpc.pub_sub1_id, module.vpc.pub_sub2_id]
-# }
 
 module "bastion" {
   source     = "./module/bastion"
@@ -73,8 +62,8 @@ module "nexus" {
   subnet1_id = module.vpc.pub_sub1_id
   subnet2_id = module.vpc.pub_sub2_id
   acm_certificate_arn = data.aws_acm_certificate.auto_acm_cert.arn
-  nr-key = var.nr_key
-  nr-id = var.nr_acct_id
+  nr-key = var.nr-key
+  nr-id = var.nr-acc-id
 }
 
 module "database" {
@@ -96,12 +85,10 @@ module "ansible" {
   vpc       = module.vpc.vpc_id
   bastion   = module.bastion.bastion_sg
   private-key = module.vpc.private_key
-  deployment = "./module/ansible/deployment.yml" # Path to the deployment file
-  prod-bashscript = "./module/ansible/prod-bashscript.sh" # Path to the prod bash script
-  stage-bashscript = "./module/ansible/stage-bashscript.sh" # Path to the stage bash script
   nexus-ip = module.nexus.nexus_ip
-  nr_key = var.nr_key
-  nr_acc_id = var.nr_acct_id
+  nr-key = var.nr-key
+  nr-acc-id = var.nr-acc-id
+  s3Bucket = var.s3Bucket
 }
 
 module "prod-envi" {
@@ -117,8 +104,8 @@ module "prod-envi" {
   acm-cert-arn = data.aws_acm_certificate.auto_acm_cert.arn
   domain       = var.domain
   nexus_ip     = module.nexus.nexus_ip
-  nr_key       = var.nr_key
-  nr_acct_id   = var.nr_acct_id  
+  nr-key       = var.nr-key
+  nr-acc-id   = var.nr-acc-id
   ansible      =  module.ansible.ansible_sg
 }
 
@@ -135,8 +122,8 @@ module "stage-envi" {
   acm-cert-arn = data.aws_acm_certificate.auto_acm_cert.arn
   domain       = var.domain
   nexus_ip     = module.nexus.nexus_ip
-  nr_key       = var.nr_key
-  nr_acct_id   = var.nr_acct_id  
+  nr-key       = var.nr-key
+  nr-acc-id   = var.nr-acc-id
   ansible      =  module.ansible.ansible_sg
 }
 

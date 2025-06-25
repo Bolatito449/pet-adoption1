@@ -314,8 +314,8 @@ resource "aws_instance" "jenkins_server" {
   }
 
   user_data = templatefile("./jenkins-userdata.sh", {
-    nr_key     = "NRAK-STHXOMP3XNPIKH26SUYXNQQQ9PV"
-    nr_acct_id = "6540262"
+    nr-key     = "NRAK-STHXOMP3XNPIKH26SUYXNQQQ9PV"
+    nr-acc-id = "6540262"
   })
 
   tags = {

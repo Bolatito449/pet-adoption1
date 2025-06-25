@@ -9,7 +9,7 @@ variable "domain" {
 variable "public_subnets" {}
 variable "acm_certificate_arn" {}
 variable "route53_zone_id" {}
-variable "nr_key" {}
-variable "nr_acct_id" {}
+variable "nr-key" {}
+variable "nr-acc-id" {}
 # variable "auto_acm_cert" {}
 

@@ -3,9 +3,13 @@ variable "domain" {
   type        = string
   default     = "bolatitoadegoroye.top"
 }
-variable "nr_key" {
+variable "nr-key" {
   default = "NRAK-STHXOMP3XNPIKH26SUYXNQQQ9PV"
 }
-variable "nr_acct_id" {
+variable "nr-acc-id" {
   default = "6540262"
+}
+
+variable "s3Bucket" {
+  default = "tito-bucket-pet-adoption"
 }
