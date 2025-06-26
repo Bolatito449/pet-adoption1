@@ -14,7 +14,7 @@ output "ansible-server-ip" {
 }
 
 output "sonarqube_public_ip" {
-  value = module.sonarqube.sonarqube_public_ip
+  value = module.sonarqube.sonarqube-server-public_ip
 }
 
 output "DB-endpoint" {
