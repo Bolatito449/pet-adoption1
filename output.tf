@@ -9,14 +9,14 @@ output "nexus_private_ip" {
   value = module.nexus.nexus_private_ip
 }
 
-output "ansible-server-ip" {
+output "ansible_ip" {
   value = module.ansible.ansible_ip
 }
 
-output "sonarqube_public_ip" {
-  value = module.sonarqube.sonarqube-server-public_ip
+output "sonarqube-ip" {
+  value = module.sonarqube.sonarqube-ip
 }
 
-output "DB-endpoint" {
+output "db_endpoint" {
   value = module.database.db_endpoint
 }
