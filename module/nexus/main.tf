@@ -102,8 +102,8 @@ resource "aws_elb" "elb_nexus" {
   security_groups = [aws_security_group.nexus-elb-sg.id]
 
   listener {
-    instance_port      = 8085
-    instance_protocol  = "HTTPS"
+    instance_port      = 8081
+    instance_protocol  = "HTTP"
     lb_port            = 443
     lb_protocol        = "HTTPS"
     ssl_certificate_id = var.acm_certificate_arn
