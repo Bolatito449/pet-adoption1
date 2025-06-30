@@ -4,7 +4,7 @@ provider "aws" {
 
 provider "vault" {
   address = "https://vault.bolatitoadegoroye.top"
-  token   = "s.XfSdwKWJA2k1kgEaXqP8IlZ2"
+  token   = "s.BEJbDUOzXW6Z826UgglwLe1r"
 }
 
 terraform {
