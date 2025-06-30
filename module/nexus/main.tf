@@ -103,7 +103,7 @@ resource "aws_elb" "elb_nexus" {
 
   listener {
     instance_port      = 8085
-    instance_protocol  = "HTTP"
+    instance_protocol  = "HTTPS"
     lb_port            = 443
     lb_protocol        = "HTTPS"
     ssl_certificate_id = var.acm_certificate_arn
