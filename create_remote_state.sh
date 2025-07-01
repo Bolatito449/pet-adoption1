@@ -37,6 +37,7 @@ echo "🌍 S3 Bucket: $BUCKET_NAME"
 echo "🚀 Provisioning Vault and Jenkins server..."
 cd ./vault-jenkins
 terraform init
+terraform init -upgrade
 terraform fmt --recursive
 terraform validate
 terraform apply -auto-approve
