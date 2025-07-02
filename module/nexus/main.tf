@@ -85,6 +85,14 @@ resource "aws_security_group" "nexus-elb-sg" {
     protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  ingress {
+  from_port   = 8443
+  to_port     = 8443
+  protocol    = "TCP"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -108,6 +116,15 @@ resource "aws_elb" "elb_nexus" {
     lb_protocol        = "HTTPS"
     ssl_certificate_id = var.acm_certificate_arn
   }
+
+  listener {
+  instance_port      = 8085
+  instance_protocol  = "HTTP"
+  lb_port            = 8443
+  lb_protocol        = "HTTPS"
+  ssl_certificate_id = var.acm_certificate_arn
+}
+
   health_check {
     healthy_threshold   = 3
     unhealthy_threshold = 5
