@@ -197,7 +197,7 @@ resource "null_resource" "configure_docker" {
   connection {
     type        = "ssh"
     user        = "ec2-user" # Use "ubuntu" if using Ubuntu AMI
-    private_key = file("~/.ssh/my-key.pem")
+    private_key = file("~/.ssh/tito-ad-key.pem")
     host        = aws_instance.nexus.public_ip
   }
 
