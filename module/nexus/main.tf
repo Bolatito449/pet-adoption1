@@ -176,17 +176,35 @@ resource "aws_route53_record" "nexus-record" {
 # }
 
 # Update Jenkins host Docker daemon for insecure Nexus registry
-resource "null_resource" "update_jenkins" {
+# resource "null_resource" "update_jenkins" {
+#   depends_on = [aws_instance.nexus]
+#   provisioner "local-exec" {
+#     command = <<EOF
+# #!/bin/bash
+# sudo cat <<EOT>> /etc/docker/daemon.json
+# {
+#   "insecure-registries" : ["${aws_instance.nexus.public_ip}:8085"]
+# }
+# EOT
+# EOF
+#     interpreter = ["bash", "-c"]
+#   }
+# }
+
+resource "null_resource" "configure_docker" {
   depends_on = [aws_instance.nexus]
-  provisioner "local-exec" {
-    command = <<EOF
-#!/bin/bash
-sudo cat <<EOT>> /etc/docker/daemon.json
-{
-  "insecure-registries" : ["${aws_instance.nexus.public_ip}:8085"]
-}
-EOT
-EOF
-    interpreter = ["bash", "-c"]
+
+  connection {
+    type        = "ssh"
+    user        = "ec2-user" # Use "ubuntu" if using Ubuntu AMI
+    private_key = file("~/.ssh/my-key.pem")
+    host        = aws_instance.nexus.public_ip
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo '{\"insecure-registries\": [\"${aws_instance.nexus.public_ip}:8085\"]}' | sudo tee /etc/docker/daemon.json",
+      "sudo systemctl restart docker"
+    ]
   }
 }
