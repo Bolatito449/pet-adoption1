@@ -120,10 +120,11 @@ resource "aws_elb" "elb_nexus" {
   listener {
   instance_port      = 8085
   instance_protocol  = "HTTP"
-  lb_port            = 8443
+  lb_port            = 443
   lb_protocol        = "HTTPS"
   ssl_certificate_id = var.acm_certificate_arn
 }
+
 
   health_check {
     healthy_threshold   = 3

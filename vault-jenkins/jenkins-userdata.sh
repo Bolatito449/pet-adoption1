@@ -31,6 +31,9 @@ sudo yum config-manager --add-repo https://download.docker.com/linux/centos/dock
 sudo yum install docker-ce -y
 sudo systemctl start docker
 sudo systemctl enable docker
+sudo usermod -aG docker ec2-user
+sudo usermod -aG docker jenkins
+sudo chmod 777 /var/run/docker.sock
 
 # Installing awscli
 sudo yum update
