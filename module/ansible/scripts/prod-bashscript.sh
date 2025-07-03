@@ -10,7 +10,7 @@ echo "Script started at $(date)"
 AWSCLI_PATH='/usr/local/bin/aws'
 INVENTORY_FILE='/etc/ansible/prod_hosts'
 IPS_FILE='/etc/ansible/prod.lists'
-ASG_NAME='auto-discov-prod-asg'
+ASG_NAME='tito-ad-prod-asg'
 SSH_KEY_PATH='/home/ec2-user/.ssh/id_rsa'  # Fixed: Using full path instead of ~
 WAIT_TIME=20
 

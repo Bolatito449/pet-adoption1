@@ -10,7 +10,7 @@ echo "Stage script started at $(date)"
 AWSCLI_PATH='/usr/local/bin/aws'
 INVENTORY_FILE='/etc/ansible/stage_hosts'
 IPS_FILE='/etc/ansible/stage.lists'
-ASG_NAME='auto-discov-stage-asg'
+ASG_NAME='tito-ad-stage-asg'
 SSH_KEY_PATH='/home/ec2-user/.ssh/id_rsa'  # Fixed: Using full path
 WAIT_TIME=20
 
