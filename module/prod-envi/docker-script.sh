@@ -9,8 +9,6 @@ sudo yum install -y yum-utils
 sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo #downloads & adds repo to instance
 sudo yum install docker-ce -y
  
- 
- 
 #add a registry to the Docker daemon configuration to allow 
 #insecure communication (without TLS verification) with a Docker registry on port 8085
 sudo cat <<EOT>> /etc/docker/daemon.json
