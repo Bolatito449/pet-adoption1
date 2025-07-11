@@ -1,5 +1,6 @@
 # pet-adoption1
 Pet Adoption Shop – Automation Project
+
 Overview
 The Pet Adoption Shop project is a Java-based web application that simulates a platform for adopting pets. This project showcases full DevOps lifecycle automation using CI/CD pipelines. It integrates source control, build automation, security scanning, infrastructure provisioning, configuration management, and deployment.
 
